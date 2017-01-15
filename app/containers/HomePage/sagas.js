@@ -6,6 +6,7 @@ import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects'
 import { LOCATION_CHANGE } from 'react-router-redux';
 import { LOAD_REPOS } from 'containers/App/constants';
 import { reposLoaded, repoLoadingError } from 'containers/App/actions';
+import { showLoading, hideLoading } from 'react-redux-loading-bar';
 
 import request from 'utils/request';
 import { makeSelectUsername } from 'containers/HomePage/selectors';
@@ -20,10 +21,13 @@ export function* getRepos() {
 
   try {
     // Call our request helper (see 'utils/request')
+    yield put(showLoading());
     const repos = yield call(request, requestURL);
     yield put(reposLoaded(repos, username));
   } catch (err) {
     yield put(repoLoadingError(err));
+  } finally {
+    yield put(hideLoading());
   }
 }
 
